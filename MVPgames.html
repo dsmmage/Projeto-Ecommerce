@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVPgames</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080810;--s1:#0f0f1e;--s2:#141428;--card:#16162a;
+  --r:#e63946;--p:#a855f7;--g:#00ff87;--b:#0ea5e9;--o:#f4a261;--pk:#ff2d78;
+  --text:#f0f0f0;--muted:#7070a0;--border:#1e1e3a;
+  --glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;}
+
+/* ── MESH BG ── */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 20%,rgba(168,85,247,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 80%,rgba(230,57,70,.1) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 60% at 50% 50%,rgba(14,165,233,.06) 0%,transparent 70%);}
+
+/* ── GLASS UTIL ── */
+.glass{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);}
+
+/* ══════════════════════════════════
+   NAV — glassmorphism
+══════════════════════════════════ */
+nav{position:sticky;top:0;z-index:200;background:rgba(8,8,16,.7);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--glass-border);}
+.nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:14px;height:62px;}
+.logo{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:900;letter-spacing:-1px;cursor:pointer;text-decoration:none;background:linear-gradient(135deg,var(--r),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-search{flex:1;max-width:360px;position:relative;}
+.nav-search input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);border-radius:50px;padding:8px 16px;color:var(--text);font-size:.82rem;outline:none;transition:.2s;font-family:'Space Grotesk',sans-serif;}
+.nav-search input:focus{border-color:var(--p);background:rgba(168,85,247,.08);}
+#search-dropdown{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--s1);border:1px solid var(--glass-border);border-radius:14px;overflow:hidden;display:none;box-shadow:0 20px 60px rgba(0,0,0,.6);backdrop-filter:blur(20px);}
+.nav-links{display:flex;gap:2px;}
+.nav-links a{color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:50px;font-size:.8rem;font-weight:500;transition:.2s;cursor:pointer;white-space:nowrap;}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,.07);}
+.nav-links a.active{color:var(--p);}
+.nav-right{display:flex;gap:8px;margin-left:auto;}
+.nbtn{padding:7px 14px;border-radius:50px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;font-family:'Space Grotesk',sans-serif;border:none;white-space:nowrap;}
+.nbtn-ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--glass-border);}
+.nbtn-ghost:hover{background:rgba(255,255,255,.1);border-color:var(--p);}
+.nbtn-solid{background:linear-gradient(135deg,var(--r),var(--pk));color:#fff;}
+.nbtn-solid:hover{opacity:.85;transform:translateY(-1px);}
+.badge-pill{background:var(--p);color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;vertical-align:super;margin-left:2px;}
+
+/* ══════════════════════════════════
+   PAGES
+══════════════════════════════════ */
+.page{display:none;position:relative;z-index:1;}
+.page.active{display:block;}
+
+/* ══════════════════════════════════
+   HERO — sculptural + bento
+══════════════════════════════════ */
+.hero{padding:60px 24px 0;overflow:hidden;}
+.hero-inner{max-width:1280px;margin:0 auto;}
+
+/* Giant kinetic headline */
+.hero-headline{position:relative;margin-bottom:40px;}
+.hero-kicker{font-size:.72rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--p);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.hero-kicker::before{content:'';width:28px;height:2px;background:var(--p);}
+.sculpt-title{font-family:'Syne',sans-serif;font-weight:900;line-height:.92;letter-spacing:-3px;user-select:none;}
+.sculpt-title .t1{font-size:clamp(4rem,9vw,8.5rem);display:block;background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.5) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sculpt-title .t2{font-size:clamp(4rem,9vw,8.5rem);display:block;background:linear-gradient(135deg,var(--r),var(--p),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 4s ease infinite;}
+.sculpt-title .t3{font-size:clamp(2rem,5vw,4rem);display:block;color:var(--muted);font-weight:400;letter-spacing:-1px;margin-top:8px;}
+@keyframes gradShift{0%,100%{filter:hue-rotate(0deg);}50%{filter:hue-rotate(30deg);}}
+
+.hero-sub{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:40px;flex-wrap:wrap;}
+.hero-desc{font-size:1rem;color:var(--muted);max-width:420px;line-height:1.7;}
+.hero-cta{display:flex;gap:12px;}
+.btn-grad{padding:13px 28px;border-radius:50px;font-size:.92rem;font-weight:700;cursor:pointer;border:none;font-family:'Space Grotesk',sans-serif;transition:.25s;display:inline-flex;align-items:center;gap:8px;}
+.btn-grad-primary{background:linear-gradient(135deg,var(--r),var(--pk));color:#fff;box-shadow:0 8px 32px rgba(230,57,70,.3);}
+.btn-grad-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(230,57,70,.45);}
+.btn-grad-outline{background:transparent;color:var(--text);border:1px solid var(--glass-border);}
+.btn-grad-outline:hover{border-color:var(--p);color:var(--p);}
+
+/* ── MARQUEE ── */
+.marquee-wrap{overflow:hidden;border-top:1px solid var(--glass-border);border-bottom:1px solid var(--glass-border);padding:12px 0;margin-bottom:52px;}
+.marquee-track{display:flex;gap:40px;width:max-content;animation:marquee 22s linear infinite;}
+.marquee-track:hover{animation-play-state:paused;}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.marquee-item{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:12px;}
+.marquee-dot{width:5px;height:5px;border-radius:50%;background:var(--p);}
+
+/* ── BENTO GRID ── */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:auto;gap:14px;margin-bottom:80px;}
+.bento-cell{border-radius:20px;overflow:hidden;cursor:pointer;transition:.3s;position:relative;}
+.bento-cell:hover{transform:translateY(-4px);}
+.bc-main{grid-column:span 2;grid-row:span 2;min-height:300px;background:linear-gradient(135deg,#1a0a2e,#0d0d1a);border:1px solid var(--glass-border);display:flex;flex-direction:column;justify-content:flex-end;padding:28px;}
+.bc-main::before{content:'🎮';position:absolute;top:20px;right:20px;font-size:5rem;opacity:.25;transition:.3s;}
+.bc-main:hover::before{transform:scale(1.1) rotate(-10deg);opacity:.4;}
+.bc-tall{grid-row:span 2;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;}
+.bc-wide{grid-column:span 2;min-height:140px;display:flex;align-items:center;padding:22px;gap:16px;}
+.bc-sm{min-height:140px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:18px;gap:8px;}
+.bc-main .bc-label{font-size:.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+.bc-main h2{font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;line-height:1.1;margin-bottom:8px;}
+.bc-main p{font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:16px;}
+.bc-cta{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:50px;width:fit-content;}
+.bc-tag{font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:50px;margin-bottom:8px;display:inline-block;width:fit-content;}
+.bc-tall .bc-icon{font-size:2.8rem;margin-bottom:10px;}
+.bc-tall h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:900;}
+.bc-tall p{font-size:.75rem;color:var(--muted);margin-top:4px;}
+.bc-wide .bc-icon-big{font-size:3rem;}
+.bc-wide h3{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:900;}
+.bc-wide .bc-meta{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.bc-sm .bc-icon{font-size:2rem;}
+.bc-sm h4{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:800;}
+.bc-sm span{font-size:.72rem;color:var(--muted);}
+
+/* Colors per cell */
+.bento-purple{background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(168,85,247,.1));border:1px solid rgba(168,85,247,.25);}
+.bento-red{background:linear-gradient(135deg,rgba(230,57,70,.3),rgba(255,45,120,.1));border:1px solid rgba(230,57,70,.25);}
+.bento-blue{background:linear-gradient(135deg,rgba(14,165,233,.25),rgba(0,255,135,.05));border:1px solid rgba(14,165,233,.2);}
+.bento-orange{background:linear-gradient(135deg,rgba(244,162,97,.25),rgba(230,57,70,.1));border:1px solid rgba(244,162,97,.2);}
+.bento-dark{background:var(--s2);border:1px solid var(--border);}
+.bento-glass{background:rgba(255,255,255,.03);border:1px solid var(--glass-border);backdrop-filter:blur(10px);}
+
+/* ══════════════════════════════════
+   CAT STRIP
+══════════════════════════════════ */
+.cat-strip{display:flex;gap:8px;flex-wrap:wrap;padding:0 24px 40px;max-width:1280px;margin:0 auto;}
+.chip{padding:8px 18px;border-radius:50px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);color:var(--muted);}
+.chip:hover,.chip.active{background:linear-gradient(135deg,var(--r),var(--pk));border-color:transparent;color:#fff;box-shadow:0 4px 20px rgba(230,57,70,.3);}
+.chip.active-p{background:linear-gradient(135deg,var(--p),#7c3aed);border-color:transparent;color:#fff;box-shadow:0 4px 20px rgba(168,85,247,.3);}
+
+/* ══════════════════════════════════
+   PRODUCTS
+══════════════════════════════════ */
+.products-section{padding:0 24px 80px;}
+.products-section-inner{max-width:1280px;margin:0 auto;}
+.sec-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;}
+.sec-title{font-family:'Syne',sans-serif;font-weight:900;font-size:2rem;letter-spacing:-1px;}
+.sec-title span{background:linear-gradient(135deg,var(--r),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.see-all{font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'Space Grotesk',sans-serif;transition:.2s;}
+.see-all:hover{color:var(--p);}
+
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;}
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:.35s;transform-style:preserve-3d;}
+.pcard:hover{border-color:rgba(168,85,247,.4);transform:translateY(-6px) rotateX(2deg);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(168,85,247,.2);}
+.pcard-img{height:200px;background:#f8f8f8;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-radius:12px 12px 0 0;}
+.pcard-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.4));pointer-events:none;}
+.pbadge{position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:50px;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;z-index:1;}
+.pbadge-new{background:linear-gradient(135deg,var(--g),#00cc6a);color:#000;}
+.pbadge-sale{background:linear-gradient(135deg,var(--o),var(--pk));color:#fff;}
+.pwish{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:8px;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:.2s;z-index:1;}
+.pwish:hover,.pwish.on{background:var(--r);border-color:var(--r);}
+.pbody{padding:14px;flex:1;display:flex;flex-direction:column;}
+.pplatform{font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.pname{font-size:.9rem;font-weight:700;margin-bottom:4px;line-height:1.3;}
+.prating{font-size:.75rem;color:var(--o);margin-bottom:10px;display:flex;gap:4px;align-items:center;}
+.pprice{margin-top:auto;}
+.pprice-old{font-size:.75rem;color:var(--muted);text-decoration:line-through;}
+.pprice-now{font-size:1.1rem;font-weight:800;}
+.pprice-pix{font-size:.7rem;color:var(--g);font-weight:600;margin-top:1px;}
+.pprice-inst{font-size:.68rem;color:var(--muted);}
+.padd{margin-top:10px;width:100%;padding:9px;border-radius:10px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:.25s;background:linear-gradient(135deg,rgba(230,57,70,.2),rgba(168,85,247,.2));color:var(--text);border:1px solid rgba(168,85,247,.2);}
+.padd:hover{background:linear-gradient(135deg,var(--r),var(--pk));border-color:transparent;box-shadow:0 4px 20px rgba(230,57,70,.3);}
+
+/* ══════════════════════════════════
+   PROMO BANNER
+══════════════════════════════════ */
+.promo-banner{padding:0 24px 80px;}
+.promo-inner{max-width:1280px;margin:0 auto;}
+.promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.promo-card{border-radius:20px;padding:36px;position:relative;overflow:hidden;cursor:pointer;transition:.3s;}
+.promo-card:hover{transform:translateY(-3px);}
+.promo-card::after{content:attr(data-emoji);position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:7rem;opacity:.15;pointer-events:none;transition:.3s;}
+.promo-card:hover::after{transform:translateY(-50%) scale(1.1);opacity:.25;}
+.promo-tag{font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:10px;}
+.promo-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:900;margin-bottom:8px;}
+.promo-desc{font-size:.85rem;color:rgba(255,255,255,.7);margin-bottom:20px;}
+.promo-card-red{background:linear-gradient(135deg,#9d0208,var(--r));}
+.promo-card-purple{background:linear-gradient(135deg,#4c1d95,var(--p));}
+
+/* ══════════════════════════════════
+   MVP CLUB — glass tiers
+══════════════════════════════════ */
+.club-section{padding:0 24px 80px;}
+.club-inner{max-width:1280px;margin:0 auto;}
+.club-top{margin-bottom:36px;}
+.club-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--p);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.club-eyebrow::before{content:'';width:24px;height:2px;background:var(--p);}
+.club-title{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:900;letter-spacing:-1px;}
+.tiers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.tier-card{border-radius:20px;padding:24px;cursor:pointer;transition:.3s;position:relative;overflow:hidden;}
+.tier-card:hover{transform:translateY(-5px);}
+.tier-card::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(135deg,rgba(255,255,255,.05),transparent);transition:.3s;}
+.tier-card:hover::before{opacity:1;}
+.tier-bronze{background:rgba(205,127,50,.1);border:1px solid rgba(205,127,50,.25);}
+.tier-silver{background:rgba(192,192,192,.08);border:1px solid rgba(192,192,192,.2);}
+.tier-gold{background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);}
+.tier-mvp{background:linear-gradient(135deg,rgba(230,57,70,.12),rgba(168,85,247,.12));border:1px solid rgba(168,85,247,.35);}
+.tier-crown{font-size:2rem;margin-bottom:10px;}
+.tier-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;margin-bottom:2px;}
+.tier-range{font-size:.72rem;color:var(--muted);margin-bottom:14px;}
+.tier-perks{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.tier-perks li{font-size:.78rem;color:var(--muted);display:flex;gap:6px;align-items:flex-start;}
+.tier-perks li::before{content:'✓';color:var(--g);font-weight:700;flex-shrink:0;}
+
+/* ══════════════════════════════════
+   REVIEWS
+══════════════════════════════════ */
+.reviews-section{padding:0 24px 80px;}
+.reviews-inner{max-width:1280px;margin:0 auto;}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.rcard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;}
+.rcard-top{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
+.ravatar{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;}
+.rname{font-size:.88rem;font-weight:700;}
+.rprod{font-size:.73rem;color:var(--muted);}
+.rstars{font-size:.85rem;color:var(--o);margin-bottom:8px;}
+.rtext{font-size:.83rem;color:var(--muted);line-height:1.6;}
+
+/* ══════════════════════════════════
+   FOOTER
+══════════════════════════════════ */
+footer{background:var(--s1);border-top:1px solid var(--border);padding:52px 24px 24px;}
+.footer-inner{max-width:1280px;margin:0 auto;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:32px;}
+.footer-logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,var(--r),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;margin-bottom:10px;cursor:pointer;}
+.footer-desc{font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+.footer-socials{display:flex;gap:8px;}
+.fsoc{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;transition:.2s;}
+.fsoc:hover{background:rgba(168,85,247,.2);border-color:var(--p);}
+footer h4{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:12px;}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+footer ul li a{color:var(--muted);text-decoration:none;font-size:.82rem;transition:.2s;cursor:pointer;}
+footer ul li a:hover{color:var(--p);}
+.footer-bottom{border-top:1px solid var(--border);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-bottom p{font-size:.76rem;color:var(--muted);}
+.pay-row{display:flex;gap:6px;}
+.pay-pill{background:rgba(255,255,255,.05);border:1px solid var(--glass-border);border-radius:6px;padding:4px 10px;font-size:.67rem;color:var(--muted);}
+
+/* ══════════════════════════════════
+   TOAST + MODAL + CART + AI
+══════════════════════════════════ */
+.toast{position:fixed;bottom:100px;right:24px;background:linear-gradient(135deg,var(--p),#7c3aed);color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;font-size:.85rem;transform:translateY(20px);opacity:0;transition:.3s;z-index:9999;max-width:300px;box-shadow:0 8px 30px rgba(168,85,247,.4);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);}
+.overlay.open{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--glass-border);border-radius:22px;padding:28px;max-width:480px;width:100%;position:relative;max-height:90vh;overflow-y:auto;}
+.mclose{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;}
+.mclose:hover{color:var(--text);}
+
+.finput{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:.85rem;outline:none;margin-bottom:10px;transition:.2s;font-family:'Space Grotesk',sans-serif;}
+.finput:focus{border-color:var(--p);background:rgba(168,85,247,.06);}
+textarea.finput{min-height:90px;resize:vertical;}
+select.finput{cursor:pointer;}
+.flabel{font-size:.78rem;color:var(--muted);margin-bottom:5px;display:block;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* CART */
+#csidebar{position:fixed;right:0;top:0;height:100%;width:370px;background:var(--s1);border-left:1px solid var(--glass-border);z-index:400;transform:translateX(100%);transition:.3s cubic-bezier(.4,0,.2,1);padding:22px;display:flex;flex-direction:column;backdrop-filter:blur(20px);}
+#csidebar.open{transform:translateX(0);}
+.cs-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.cs-items{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.citem{background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:12px;padding:11px;display:flex;gap:10px;align-items:center;}
+.ci-icon{font-size:1.8rem;flex-shrink:0;}
+.ci-info{flex:1;min-width:0;}
+.ci-name{font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ci-price{font-size:.8rem;color:var(--r);}
+.ci-qty{display:flex;align-items:center;gap:6px;margin-top:4px;}
+.qbtn{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid var(--glass-border);color:var(--text);font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.crm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;flex-shrink:0;}
+.crm:hover{color:var(--r);}
+.cs-foot{border-top:1px solid var(--border);padding-top:16px;margin-top:14px;}
+.cs-row{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:5px;}
+.cs-total{display:flex;justify-content:space-between;font-size:1rem;font-weight:800;margin-bottom:14px;}
+.coupon-row{display:flex;gap:8px;margin-bottom:12px;}
+.coupon-row input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:.8rem;outline:none;font-family:'Space Grotesk',sans-serif;}
+.coupon-row input:focus{border-color:var(--p);}
+.coupon-row button{padding:8px 12px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);color:var(--text);font-size:.8rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.coupon-row button:hover{border-color:var(--p);color:var(--p);}
+#coupon-msg{font-size:.78rem;margin-bottom:10px;}
+
+/* AI CHAT */
+#ai-btn{position:fixed;bottom:24px;right:24px;z-index:300;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--p),#7c3aed);border:none;cursor:pointer;box-shadow:0 8px 32px rgba(168,85,247,.5);display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:.3s;}
+#ai-btn:hover{transform:scale(1.08);box-shadow:0 12px 40px rgba(168,85,247,.7);}
+#ai-panel{position:fixed;bottom:88px;right:24px;z-index:300;width:320px;background:var(--s1);border:1px solid var(--glass-border);border-radius:20px;overflow:hidden;display:none;box-shadow:0 20px 60px rgba(0,0,0,.7);backdrop-filter:blur(20px);}
+#ai-panel.open{display:flex;flex-direction:column;}
+.ai-header{background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(124,58,237,.1));padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--glass-border);}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.ai-name{font-size:.88rem;font-weight:700;}
+.ai-sub{font-size:.72rem;color:var(--muted);}
+.ai-msgs{height:220px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.ai-msg{max-width:80%;padding:9px 13px;border-radius:12px;font-size:.8rem;line-height:1.5;}
+.ai-msg.bot{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.2);align-self:flex-start;border-bottom-left-radius:3px;}
+.ai-msg.user{background:linear-gradient(135deg,var(--r),var(--pk));color:#fff;align-self:flex-end;border-bottom-right-radius:3px;}
+.ai-input-row{padding:12px;border-top:1px solid var(--glass-border);display:flex;gap:8px;}
+.ai-input-row input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:.8rem;outline:none;font-family:'Space Grotesk',sans-serif;}
+.ai-input-row input:focus{border-color:var(--p);}
+.ai-send{background:linear-gradient(135deg,var(--p),#7c3aed);border:none;border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;}
+.ai-chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 12px 10px;}
+.ai-chip{padding:4px 10px;border-radius:50px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.2);font-size:.72rem;cursor:pointer;transition:.2s;color:var(--muted);}
+.ai-chip:hover{background:rgba(168,85,247,.25);color:var(--text);}
+
+/* ══════════════════════════════════
+   INNER PAGES
+══════════════════════════════════ */
+.page-hdr{background:var(--s2);border-bottom:1px solid var(--border);padding:28px 24px;}
+.page-hdr-in{max-width:1280px;margin:0 auto;}
+.breadcrumb{font-size:.78rem;color:var(--muted);margin-bottom:8px;}
+.breadcrumb a{color:var(--p);cursor:pointer;text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
+.page-hdr h1{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:900;letter-spacing:-1px;}
+.page-content{max-width:1280px;margin:0 auto;padding:40px 24px;}
+
+/* Orders */
+.orders-list{display:flex;flex-direction:column;gap:14px;}
+.ocard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;}
+.ocard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.oid{font-size:.78rem;color:var(--muted);}
+.ostatus{padding:4px 12px;border-radius:50px;font-size:.72rem;font-weight:700;text-transform:uppercase;}
+.s-del{background:rgba(0,255,135,.1);color:var(--g);}
+.s-ship{background:rgba(244,162,97,.1);color:var(--o);}
+.s-proc{background:rgba(230,57,70,.1);color:var(--r);}
+.oitems{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.othumb{background:var(--s2);border-radius:10px;padding:10px;font-size:1.5rem;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:68px;}
+.othumb span{font-size:.65rem;color:var(--muted);max-width:62px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ofoot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.ototal{font-size:.95rem;font-weight:800;}
+.oactions{display:flex;gap:7px;}
+.bsm{padding:6px 14px;border-radius:50px;font-size:.76rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text);transition:.2s;font-family:'Space Grotesk',sans-serif;}
+.bsm:hover{border-color:var(--p);color:var(--p);}
+.bsm-p{background:linear-gradient(135deg,var(--r),var(--pk));border-color:transparent;color:#fff;}
+.bsm-p:hover{opacity:.85;}
+
+/* Tracking */
+.track-timeline{display:flex;flex-direction:column;}
+.tstep{display:flex;gap:14px;padding:12px 0;}
+.tdot-col{display:flex;flex-direction:column;align-items:center;}
+.tdot{width:13px;height:13px;border-radius:50%;background:var(--border);flex-shrink:0;margin-top:3px;}
+.tdot.done{background:var(--g);box-shadow:0 0 8px rgba(0,255,135,.5);}
+.tdot.active{background:var(--r);box-shadow:0 0 12px rgba(230,57,70,.6);}
+.tline{width:2px;flex:1;background:var(--border);min-height:18px;margin-top:3px;}
+.tline.done{background:var(--g);}
+.tinfo h4{font-size:.88rem;font-weight:700;}
+.tinfo p{font-size:.78rem;color:var(--muted);}
+.ttime{font-size:.73rem;color:var(--muted);margin-top:1px;}
+
+/* FAQ */
+.faq-item{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;}
+.faq-q{padding:16px 20px;font-size:.88rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.faq-q:hover{color:var(--p);}
+.faq-arr{transition:.3s;font-size:.78rem;}
+.faq-a{padding:0 20px;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;font-size:.83rem;color:var(--muted);line-height:1.6;}
+.faq-item.open .faq-a{max-height:200px;padding:0 20px 16px;}
+.faq-item.open .faq-arr{transform:rotate(180deg);}
+
+/* Contact channels */
+.cch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;gap:12px;align-items:flex-start;}
+.cch-icon{font-size:1.6rem;}
+.cch h4{font-size:.88rem;font-weight:700;margin-bottom:2px;}
+.cch p{font-size:.8rem;color:var(--muted);}
+.cch-val{font-size:.82rem;color:var(--p);font-weight:600;margin-top:3px;}
+
+/* Returns */
+.rsteps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+.rstep{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;}
+.rstep-n{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--r),var(--pk));color:#fff;font-weight:900;font-size:.85rem;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.rstep h4{font-size:.85rem;font-weight:700;margin-bottom:4px;}
+.rstep p{font-size:.76rem;color:var(--muted);}
+
+/* Account header */
+.acct-hdr{background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(230,57,70,.05));border:1px solid rgba(168,85,247,.2);border-radius:18px;padding:24px;display:flex;gap:18px;align-items:center;margin-bottom:24px;flex-wrap:wrap;}
+.acct-av{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--r),var(--p));display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;flex-shrink:0;}
+.acct-info h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:900;}
+.acct-info p{font-size:.8rem;color:var(--muted);}
+.acct-lvl{background:linear-gradient(135deg,rgba(230,57,70,.2),rgba(168,85,247,.2));border:1px solid rgba(168,85,247,.3);color:var(--p);padding:3px 12px;border-radius:50px;font-size:.72rem;font-weight:700;display:inline-block;margin-top:6px;}
+.coins-bar{background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:12px;padding:14px 18px;margin-left:auto;}
+.coins-n{font-size:1.5rem;font-weight:900;color:var(--o);}
+.pbar{background:var(--border);border-radius:99px;height:6px;margin-top:6px;overflow:hidden;width:180px;}
+.pfill{background:linear-gradient(90deg,var(--r),var(--p));height:100%;border-radius:99px;}
+
+/* Tabs */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.tab{padding:10px 18px;font-size:.85rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.2s;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--p);border-bottom-color:var(--p);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* Wishlist empty */
+.empty-st{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-st .ei{font-size:3.5rem;margin-bottom:12px;}
+.empty-st h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:8px;}
+
+/* Catalog */
+.sort-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.sort-count{font-size:.82rem;color:var(--muted);}
+
+@media(max-width:900px){
+  .bento{grid-template-columns:repeat(2,1fr);}
+  .bc-main{grid-column:span 2;}
+  .bc-tall{grid-row:span 1;min-height:120px;}
+  .tiers-grid{grid-template-columns:repeat(2,1fr);}
+  .reviews-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .promo-grid{grid-template-columns:1fr;}
+  .rsteps{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+  .hero h1{font-size:3rem;}
+  .bento{grid-template-columns:1fr;}
+  .bc-main{grid-column:span 1;}
+  .nav-links{display:none;}
+  #csidebar{width:100%;}
+  .pgrid{grid-template-columns:repeat(2,1fr);}
+  .tiers-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<!-- NAV -->
+<nav>
+<div class="nav-inner">
+  <span class="logo" onclick="navigate('home')">MVPgames</span>
+  <div class="nav-search">
+    <input id="search-input" type="text" placeholder="🔍  Buscar games, consoles, acessórios..." autocomplete="off">
+    <div id="search-dropdown"></div>
+  </div>
+  <div class="nav-links">
+    <a id="nav-games" onclick="navFilter('Games')">Games</a>
+    <a id="nav-consoles" onclick="navFilter('Consoles')">Consoles</a>
+    <a id="nav-acessorios" onclick="navFilter('Acessórios')">Acessórios</a>
+    <a id="nav-ofertas" onclick="navFilter('Ofertas')">Ofertas 🔥</a>
+    <a id="nav-lancamentos" onclick="navFilter('Lançamentos')">Lançamentos ✨</a>
+  </div>
+  <div class="nav-right">
+    <button class="nbtn nbtn-ghost" onclick="navigate('wishlist')">♡ <span class="badge-pill" id="wcount">0</span></button>
+    <button class="nbtn nbtn-ghost" onclick="navigate('orders')">📦 Pedidos</button>
+    <button class="nbtn nbtn-ghost" onclick="toggleCart()">🛒 <span class="badge-pill" id="ccount">0</span></button>
+    <button class="nbtn nbtn-solid" id="login-btn" onclick="openLogin()">Entrar</button>
+  </div>
+</div>
+</nav>
+
+<!-- ══ PAGE: HOME ══ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-kicker">✦ Loja oficial de games · Est. 2026</div>
+      <div class="hero-headline">
+        <div class="sculpt-title">
+          <span class="t1">O UNIVERSO</span>
+          <span class="t2">GAMER</span>
+          <span class="t3">em um só endereço</span>
+        </div>
+      </div>
+      <div class="hero-sub">
+        <p class="hero-desc">Games, consoles e acessórios com preço justo, entrega expressa e 100% autenticidade garantida.</p>
+        <div class="hero-cta">
+          <button class="btn-grad btn-grad-primary" onclick="navFilter('Lançamentos')">✨ Lançamentos</button>
+          <button class="btn-grad btn-grad-outline" onclick="document.getElementById('club-section').scrollIntoView({behavior:'smooth'})">🏆 MVPclub</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="marquee-dot"></span>PlayStation 5 Slim</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Xbox Series X</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Nintendo Switch 2</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>God of War Ragnarök</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Mario Kart World</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>HyperX Cloud III</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Razer BlackWidow V4</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>SNES Classic Mini</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>PlayStation 5 Slim</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Xbox Series X</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Nintendo Switch 2</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>God of War Ragnarök</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Mario Kart World</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>HyperX Cloud III</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Razer BlackWidow V4</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>SNES Classic Mini</span>
+    </div>
+  </div>
+
+  <!-- BENTO GRID -->
+  <div style="padding:0 24px;max-width:1280px;margin:0 auto;">
+  <div class="bento">
+    <!-- Main featured -->
+    <div class="bento-cell bc-main bento-purple" onclick="openProduct(1)" style="background:linear-gradient(135deg,rgba(124,58,237,.35),rgba(168,85,247,.15));border:1px solid rgba(168,85,247,.3)">
+      <span class="bc-tag" style="background:rgba(168,85,247,.3);color:#c4b5fd">Mais vendido</span>
+      <h2>PlayStation<br>5 Slim</h2>
+      <p>4K · 120fps · SSD ultrarrápido · DualSense</p>
+      <div class="bc-cta" style="background:linear-gradient(135deg,var(--r),var(--pk));color:#fff" onclick="event.stopPropagation();addToCart(1)">🛒 R$ 3.799 →</div>
+    </div>
+    <!-- Xbox tall -->
+    <div class="bento-cell bc-tall bento-blue" onclick="openProduct(2)">
+      <div class="bc-icon">🟢</div>
+      <span class="bc-tag" style="background:rgba(14,165,233,.25);color:#7dd3fc">Oferta</span>
+      <h3>Xbox Series X</h3>
+      <p>R$ 4.199 · 12x s/ juros</p>
+    </div>
+    <!-- Nintendo tall -->
+    <div class="bento-cell bc-tall bento-red" onclick="openProduct(3)" style="background:linear-gradient(135deg,rgba(220,38,38,.2),rgba(239,68,68,.08))">
+      <div class="bc-icon">🔴</div>
+      <span class="bc-tag" style="background:rgba(239,68,68,.25);color:#fca5a5">Novo</span>
+      <h3>Nintendo Switch 2</h3>
+      <p>R$ 3.299 · PIX 5% off</p>
+    </div>
+    <!-- Wide: promo banner -->
+    <div class="bento-cell bc-wide" style="background:linear-gradient(135deg,rgba(230,57,70,.25),rgba(255,45,120,.1));border:1px solid rgba(230,57,70,.25);grid-column:span 2;" onclick="navFilter('Ofertas')">
+      <div style="font-size:2.5rem">🔥</div>
+      <div>
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px">Semana do Gamer</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900">Até 40% OFF</h3>
+        <div class="bc-meta">Use o cupom <strong style="color:var(--o)">MVP40</strong> → Ver todas as ofertas</div>
+      </div>
+    </div>
+    <!-- Small cells -->
+    <div class="bento-cell bc-sm bento-dark" onclick="navFilter('PC')"><div class="bc-icon">💻</div><h4>PC Gaming</h4><span>Periféricos e hardware</span></div>
+    <div class="bento-cell bc-sm bento-glass" onclick="navFilter('Retro')"><div class="bc-icon">👾</div><h4>Retrô</h4><span>Colecionismo vintage</span></div>
+    <div class="bento-cell bc-sm" style="background:linear-gradient(135deg,rgba(0,255,135,.08),transparent);border:1px solid rgba(0,255,135,.15);cursor:pointer;" onclick="document.getElementById('club-section').scrollIntoView({behavior:'smooth'})"><div class="bc-icon">🏆</div><h4>MVPclub</h4><span>Fidelidade e cashback</span></div>
+  </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div style="padding:0 24px 60px;max-width:1280px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:20px;text-align:center;backdrop-filter:blur(10px);">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--r),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">+50k</div>
+        <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:3px;">Clientes</div>
+      </div>
+      <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:20px;text-align:center;backdrop-filter:blur(10px);">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--p),#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">+8k</div>
+        <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:3px;">Produtos</div>
+      </div>
+      <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:20px;text-align:center;backdrop-filter:blur(10px);">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--g),#00cc6a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">4.9★</div>
+        <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:3px;">Avaliação</div>
+      </div>
+      <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:20px;text-align:center;backdrop-filter:blur(10px);">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--b),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">24h</div>
+        <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:3px;">Entrega SP</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAT CHIPS -->
+  <div class="cat-strip" id="cat-chips">
+    <div class="chip active" onclick="navFilter('Todos')">🎯 Todos</div>
+    <div class="chip" onclick="navFilter('Games')">🕹️ Games</div>
+    <div class="chip" onclick="navFilter('Consoles')">📺 Consoles</div>
+    <div class="chip" onclick="navFilter('Acessórios')">🎧 Acessórios</div>
+    <div class="chip" onclick="navFilter('PlayStation')">🎮 PlayStation</div>
+    <div class="chip" onclick="navFilter('Xbox')">🟢 Xbox</div>
+    <div class="chip" onclick="navFilter('Nintendo')">🔴 Nintendo</div>
+    <div class="chip" onclick="navFilter('PC')">💻 PC Gaming</div>
+    <div class="chip" onclick="navFilter('Retro')">👾 Retrô</div>
+    <div class="chip" onclick="navFilter('Ofertas')">🔥 Ofertas</div>
+    <div class="chip" onclick="navFilter('Lançamentos')">✨ Lançamentos</div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="products-section" id="products-section">
+    <div class="products-section-inner">
+      <div class="sec-header">
+        <h2 class="sec-title" id="home-section-title">Em <span>Destaque</span></h2>
+        <button class="see-all" onclick="navFilter('Todos')">Ver todos →</button>
+      </div>
+      <div class="pgrid" id="products-grid"></div>
+    </div>
+  </div>
+
+  <!-- PROMO CARDS -->
+  <div class="promo-banner">
+    <div class="promo-inner">
+      <div class="promo-grid">
+        <div class="promo-card promo-card-red" data-emoji="🔥" onclick="navFilter('Ofertas')">
+          <div class="promo-tag">Promoção Limitada</div>
+          <div class="promo-title">Semana do<br>Gamer 🎮</div>
+          <div class="promo-desc">Até 40% OFF em consoles e acessórios.<br>Use: <strong>MVP40</strong></div>
+          <button class="btn-grad btn-grad-primary">Ver Ofertas →</button>
+        </div>
+        <div class="promo-card promo-card-purple" data-emoji="👑" onclick="document.getElementById('club-section').scrollIntoView({behavior:'smooth'})">
+          <div class="promo-tag">Programa de Fidelidade</div>
+          <div class="promo-title">MVPclub —<br>Cashback real</div>
+          <div class="promo-desc">Acumule coins a cada compra e resgate descontos exclusivos.</div>
+          <button class="btn-grad btn-grad-primary" style="background:linear-gradient(135deg,#fff,#e0d7ff);color:#7c3aed;">Conhecer →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MVP CLUB -->
+  <div class="club-section" id="club-section">
+    <div class="club-inner">
+      <div class="club-top">
+        <div class="club-eyebrow">✦ Programa de Fidelidade</div>
+        <h2 class="club-title">MVPclub — Suba de nível 🏆</h2>
+        <p style="color:var(--muted);margin-top:8px;font-size:.9rem">Acumule MVPcoins e desbloqueie benefícios exclusivos em cada nível.</p>
+      </div>
+      <div class="tiers-grid">
+        <div class="tier-card tier-bronze" onclick="openLogin()"><div class="tier-crown">🥉</div><div class="tier-name">Bronze</div><div class="tier-range">0 – 999 pts</div><ul class="tier-perks"><li>1 MVPcoin por R$1</li><li>Cupons mensais</li><li>Newsletter exclusiva</li></ul></div>
+        <div class="tier-card tier-silver" onclick="openLogin()"><div class="tier-crown">🥈</div><div class="tier-name">Silver</div><div class="tier-range">1.000 – 4.999 pts</div><ul class="tier-perks"><li>1,5 coins por R$1</li><li>Frete grátis ≥ R$150</li><li>Ofertas antecipadas</li></ul></div>
+        <div class="tier-card tier-gold" onclick="openLogin()"><div class="tier-crown">🥇</div><div class="tier-name">Gold</div><div class="tier-range">5.000 – 19.999 pts</div><ul class="tier-perks"><li>2x coins por R$1</li><li>Frete grátis sempre</li><li>Cashback de 5%</li><li>Suporte prioritário</li></ul></div>
+        <div class="tier-card tier-mvp" onclick="openLogin()"><div class="tier-crown">👑</div><div class="tier-name">MVP</div><div class="tier-range">20.000+ pts</div><ul class="tier-perks"><li>3x coins por R$1</li><li>Frete expresso grátis</li><li>Cashback de 10%</li><li>Pré-venda exclusiva</li><li>Gerente dedicado</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div class="reviews-section">
+    <div class="reviews-inner">
+      <div class="sec-header"><h2 class="sec-title">O que os <span>gamers</span> dizem</h2></div>
+      <div class="reviews-grid">
+        <div class="rcard"><div class="rcard-top"><div class="ravatar" style="background:linear-gradient(135deg,var(--r),var(--pk))">RM</div><div><div class="rname">Rafael M.</div><div class="rprod">PlayStation 5 · Verificado ✓</div></div></div><div class="rstars">★★★★★</div><p class="rtext">"Chegou no dia seguinte com embalagem perfeita, NF e garantia Sony. Melhor loja gamer do Brasil sem dúvida!"</p></div>
+        <div class="rcard"><div class="rcard-top"><div class="ravatar" style="background:linear-gradient(135deg,var(--g),#00cc6a);color:#000">CA</div><div><div class="rname">Carla A.</div><div class="rprod">Nintendo Switch 2 · Verificado ✓</div></div></div><div class="rstars">★★★★★</div><p class="rtext">"O chat me ajudou a escolher o jogo certo para o meu filho. Serviço especializado e atencioso!"</p></div>
+        <div class="rcard"><div class="rcard-top"><div class="ravatar" style="background:linear-gradient(135deg,var(--o),var(--r))">AS</div><div><div class="rname">André S.</div><div class="rprod">SNES Classic · Verificado ✓</div></div></div><div class="rstars">★★★★★</div><p class="rtext">"Quinta compra que faço e nunca decepcionou. Encontrei um SNES em estado perfeito com procedência garantida."</p></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end page-home -->
+
+<!-- ══ PAGE: ORDERS ══ -->
+<div class="page" id="page-orders">
+  <div class="page-hdr"><div class="page-hdr-in"><div class="breadcrumb"><a onclick="navigate('home')">Home</a> › Minha Conta</div><h1>📦 Meus Pedidos</h1></div></div>
+  <div class="page-content">
+    <div id="acct-hdr-slot"></div>
+    <div class="tabs"><div class="tab active" onclick="switchTab('orders','all',this)">Todos</div><div class="tab" onclick="switchTab('orders','proc',this)">Em andamento</div><div class="tab" onclick="switchTab('orders','done',this)">Entregues</div></div>
+    <div id="tab-orders-all" class="tab-content active"><div class="orders-list" id="ol-all"></div></div>
+    <div id="tab-orders-proc" class="tab-content"><div class="orders-list" id="ol-proc"></div></div>
+    <div id="tab-orders-done" class="tab-content"><div class="orders-list" id="ol-done"></div></div>
+  </div>
+</div>
+
+<!-- ══ PAGE: WISHLIST ══ -->
+<div class="page" id="page-wishlist">
+  <div class="page-hdr"><div class="page-hdr-in"><div class="breadcrumb"><a onclick="navigate('home')">Home</a> › Minha Conta</div><h1>♡ Lista de Desejos</h1></div></div>
+  <div class="page-content"><div id="wgrid" class="pgrid"></div><div id="wempty" class="empty-st" style="display:none"><div class="ei">💔</div><h3>Lista vazia</h3><p>Clique no ♡ para salvar produtos</p><br><button class="btn-grad btn-grad-primary" onclick="navigate('home')">Explorar produtos</button></div></div>
+</div>
+
+<!-- ══ PAGE: TRACKING ══ -->
+<div class="page" id="page-tracking">
+  <div class="page-hdr"><div class="page-hdr-in"><div class="breadcrumb"><a onclick="navigate('home')">Home</a> › Ajuda</div><h1>📍 Rastrear Pedido</h1></div></div>
+  <div class="page-content" style="max-width:640px">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:20px">
+      <label class="flabel">Número do pedido ou código de rastreamento</label>
+      <div style="display:flex;gap:10px"><input class="finput" id="track-inp" placeholder="Ex: MVP-2026-00042" style="margin-bottom:0;flex:1"><button class="btn-grad btn-grad-primary" onclick="doTrack()">Rastrear</button></div>
+    </div>
+    <div id="track-result" style="display:none"></div>
+    <div id="track-empty" class="empty-st"><div class="ei">📬</div><h3>Insira o código acima</h3><p>Código enviado por e-mail após confirmação.</p></div>
+  </div>
+</div>
+
+<!-- ══ PAGE: CONTACT ══ -->
+<div class="page" id="page-contact">
+  <div class="page-hdr"><div class="page-hdr-in"><div class="breadcrumb"><a onclick="navigate('home')">Home</a> › Ajuda</div><h1>💬 Fale Conosco</h1></div></div>
+  <div class="page-content">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
+      <div>
+        <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:18px">Envie uma mensagem</h3>
+        <div class="frow"><div><label class="flabel">Nome</label><input class="finput" id="ct-name" placeholder="Seu nome"></div><div><label class="flabel">E-mail</label><input class="finput" id="ct-email" type="email" placeholder="email@exemplo.com"></div></div>
+        <label class="flabel">Assunto</label>
+        <select class="finput" id="ct-subj"><option>Dúvida sobre produto</option><option>Status do pedido</option><option>Troca ou devolução</option><option>Problema no pagamento</option><option>Outro</option></select>
+        <label class="flabel">Mensagem</label>
+        <textarea class="finput" id="ct-msg" placeholder="Descreva com detalhes..."></textarea>
+        <button class="btn-grad btn-grad-primary" style="width:100%" onclick="submitContact()">Enviar Mensagem 📨</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:4px">Outros canais</h3>
+        <div class="cch"><div class="cch-icon">💬</div><div><h4>Chat ao vivo</h4><p>Seg–Sáb, 9h–22h</p><div class="cch-val">● Online agora</div></div></div>
+        <div class="cch"><div class="cch-icon">📱</div><div><h4>WhatsApp</h4><p>Atendimento rápido</p><div class="cch-val">(11) 99999-0000</div></div></div>
+        <div class="cch"><div class="cch-icon">📧</div><div><h4>E-mail</h4><p>Resposta em até 24h</p><div class="cch-val">suporte@mvpgames.com.br</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: HELP ══ -->
+<div class="page" id="page-help">
+  <div class="page-hdr"><div class="page-hdr-in"><div class="breadcrumb"><a onclick="navigate('home')">Home</a></div><h1>❓ Central de Ajuda</h1></div></div>
+  <div class="page-content">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px">
+      <div class="cch" style="cursor:pointer" onclick="navigate('tracking')"><div class="cch-icon">📍</div><div><h4>Rastrear pedido</h4><p>Acompanhe sua entrega</p></div></div>
+      <div class="cch" style="cursor:pointer" onclick="navigate('returns')"><div class="cch-icon">🔄</div><div><h4>Trocas e devoluções</h4><p>Política e solicitação</p></div></div>
+      <div class="cch" style="cursor:pointer" onclick="navigate('contact')"><div class="cch-icon">💬</div><div><h4>Fale conosco</h4><p>Chat, WhatsApp, e-mail</p></div></div>
+    </div>
+    <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:16px">Perguntas Frequentes</h3>
+    <div id="faq-list"></div>
+  </div>
+</div>
+
+<!-- ══ PAGE: RETURNS ══ -->
+<div class="page" id="page-returns">
+  <div class="page-hdr"><div class="page-hdr-in"><div class="breadcrumb"><a onclick="navigate('home')">Home</a> › Ajuda</div><h1>🔄 Trocas e Devoluções</h1></div></div>
+  <div class="page-content">
+    <div class="rsteps">
+      <div class="rstep"><div class="rstep-n">1</div><h4>Solicite online</h4><p>Acesse "Meus Pedidos" e clique em "Devolver"</p></div>
+      <div class="rstep"><div class="rstep-n">2</div><h4>Receba a etiqueta</h4><p>Enviamos por e-mail em até 24h</p></div>
+      <div class="rstep"><div class="rstep-n">3</div><h4>Poste nos Correios</h4><p>Em qualquer agência com a etiqueta</p></div>
+      <div class="rstep"><div class="rstep-n">4</div><h4>Reembolso</h4><p>Em até 5 dias úteis após recebimento</p></div>
+    </div>
+    <div style="background:var(--card);border-radius:16px;padding:22px;max-width:600px">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:14px">Solicitar devolução</h3>
+      <label class="flabel">Número do pedido</label><input class="finput" id="ret-order" placeholder="MVP-2026-XXXXX">
+      <label class="flabel">Motivo</label>
+      <select class="finput" id="ret-reason"><option>Produto com defeito</option><option>Produto diferente do pedido</option><option>Arrependimento</option><option>Embalagem danificada</option></select>
+      <label class="flabel">Descrição</label>
+      <textarea class="finput" id="ret-desc" placeholder="Descreva o problema..."></textarea>
+      <button class="btn-grad btn-grad-primary" onclick="submitReturn()">Solicitar Devolução</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: CATALOG ══ -->
+<div class="page" id="page-catalog">
+  <div class="page-hdr"><div class="page-hdr-in"><div class="breadcrumb"><a onclick="navigate('home')">Home</a> › <span id="cat-bc">Catálogo</span></div><h1 id="cat-title">Produtos</h1></div></div>
+  <div style="padding:20px 24px 0;max-width:1280px;margin:0 auto">
+    <div class="cat-strip" id="cat-chips-2" style="padding:0 0 20px">
+      <div class="chip" onclick="navFilter('Todos')">🎯 Todos</div>
+      <div class="chip" onclick="navFilter('Games')">🕹️ Games</div>
+      <div class="chip" onclick="navFilter('Consoles')">📺 Consoles</div>
+      <div class="chip" onclick="navFilter('Acessórios')">🎧 Acessórios</div>
+      <div class="chip" onclick="navFilter('PlayStation')">🎮 PlayStation</div>
+      <div class="chip" onclick="navFilter('Xbox')">🟢 Xbox</div>
+      <div class="chip" onclick="navFilter('Nintendo')">🔴 Nintendo</div>
+      <div class="chip" onclick="navFilter('PC')">💻 PC Gaming</div>
+      <div class="chip" onclick="navFilter('Retro')">👾 Retrô</div>
+      <div class="chip" onclick="navFilter('Ofertas')">🔥 Ofertas</div>
+      <div class="chip" onclick="navFilter('Lançamentos')">✨ Lançamentos</div>
+    </div>
+  </div>
+  <div class="products-section"><div class="products-section-inner">
+    <div class="sort-row">
+      <span class="sort-count" id="cat-count"></span>
+      <div style="display:flex;align-items:center;gap:8px"><label style="font-size:.8rem;color:var(--muted)">Ordenar:</label>
+      <select class="finput" id="sort-sel" style="margin-bottom:0;width:auto;padding:7px 12px;font-size:.8rem" onchange="currentSort=this.value;renderCatalog()">
+        <option value="relevance">Relevância</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option><option value="rating">Melhor avaliação</option>
+      </select></div>
+    </div>
+    <div class="pgrid" id="catalog-grid"></div>
+  </div></div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+<div class="footer-inner">
+  <div class="footer-grid">
+    <div><span class="footer-logo" onclick="navigate('home')">MVPgames</span><p class="footer-desc">Sua loja definitiva de games, consoles e acessórios. Preço justo, entrega rápida e autenticidade garantida.</p>
+    <div class="footer-socials"><span class="fsoc">𝕏</span><span class="fsoc">▶</span><span class="fsoc">📸</span><span class="fsoc">💬</span></div></div>
+    <div><h4>Loja</h4><ul><li><a onclick="navFilter('Games')">Games</a></li><li><a onclick="navFilter('Consoles')">Consoles</a></li><li><a onclick="navFilter('Acessórios')">Acessórios</a></li><li><a onclick="navFilter('Lançamentos')">Lançamentos</a></li><li><a onclick="navFilter('Ofertas')">Ofertas</a></li></ul></div>
+    <div><h4>Conta</h4><ul><li><a onclick="navigate('orders')">Meus Pedidos</a></li><li><a onclick="navigate('wishlist')">Wishlist</a></li><li><a onclick="document.getElementById('club-section')?.scrollIntoView({behavior:'smooth'})">MVPclub</a></li><li><a onclick="navigate('orders')">Endereços</a></li></ul></div>
+    <div><h4>Ajuda</h4><ul><li><a onclick="navigate('help')">Central de Ajuda</a></li><li><a onclick="navigate('returns')">Trocas e Devoluções</a></li><li><a onclick="navigate('tracking')">Rastrear Pedido</a></li><li><a onclick="navigate('contact')">Fale Conosco</a></li><li><a onclick="showToast('📄 LGPD: seus dados são protegidos conforme a Lei 13.709/2018')">LGPD</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 MVPgames — CNPJ 00.000.000/0001-00 — Projeto fictício de portfólio</p>
+    <div class="pay-row"><span class="pay-pill">PIX</span><span class="pay-pill">Visa</span><span class="pay-pill">Master</span><span class="pay-pill">Boleto</span></div>
+  </div>
+</div>
+</footer>
+
+<!-- ══ OVERLAYS ══ -->
+<div class="overlay" id="ov-product"><div class="modal"><button class="mclose" onclick="closeOv('ov-product')">×</button><div id="mc-product"></div></div></div>
+<div class="overlay" id="ov-auth"><div class="modal"><button class="mclose" onclick="closeOv('ov-auth')">×</button><div id="mc-auth"></div></div></div>
+<div class="overlay" id="ov-checkout"><div class="modal" style="max-width:540px"><button class="mclose" onclick="closeOv('ov-checkout')">×</button><div id="mc-checkout"></div></div></div>
+
+<!-- ══ CART SIDEBAR ══ -->
+<div id="csidebar">
+  <div class="cs-header"><h3 style="font-family:'Syne',sans-serif">🛒 Carrinho</h3><button onclick="toggleCart()" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer">×</button></div>
+  <div class="cs-items" id="cs-items"><p style="color:var(--muted);text-align:center;padding:40px 0">Carrinho vazio 🛒</p></div>
+  <div class="cs-foot">
+    <div class="coupon-row"><input id="coup-inp" placeholder="Cupom de desconto"><button onclick="applyCoupon()">Aplicar</button></div>
+    <div id="coup-msg" style="margin-bottom:8px"></div>
+    <div class="cs-row"><span>Subtotal</span><span id="cs-sub">R$ 0,00</span></div>
+    <div class="cs-row"><span>Frete</span><span id="cs-frete" style="color:var(--g)">Calcular no checkout</span></div>
+    <div class="cs-row" id="cs-disc-row" style="display:none;color:var(--g)"><span>Desconto</span><span id="cs-disc"></span></div>
+    <div class="cs-total"><span>Total</span><span id="cs-total">R$ 0,00</span></div>
+    <button class="btn-grad btn-grad-primary" style="width:100%" onclick="openCheckout()">Finalizar Compra →</button>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ AI CHAT ══ -->
+<button id="ai-btn" onclick="toggleAI()" title="MVP Assistant">🤖</button>
+<div id="ai-panel">
+  <div class="ai-header"><div class="ai-dot"></div><div><div class="ai-name">MVP Assistant</div><div class="ai-sub">IA · Online agora</div></div><button onclick="toggleAI()" style="background:none;border:none;color:var(--muted);cursor:pointer;margin-left:auto;font-size:1rem">×</button></div>
+  <div class="ai-msgs" id="ai-msgs">
+    <div class="ai-msg bot">Olá! 👋 Sou o MVP Assistant. Como posso te ajudar hoje?</div>
+  </div>
+  <div class="ai-chips" id="ai-chips">
+    <span class="ai-chip" onclick="aiMsg('Qual o melhor console para presentear?')">🎮 Melhor console?</span>
+    <span class="ai-chip" onclick="aiMsg('Tem frete grátis?')">🚚 Frete grátis?</span>
+    <span class="ai-chip" onclick="aiMsg('Como rastrear meu pedido?')">📍 Rastrear pedido</span>
+    <span class="ai-chip" onclick="aiMsg('Quero ver as ofertas')">🔥 Ofertas</span>
+  </div>
+  <div class="ai-input-row"><input id="ai-input" placeholder="Digite sua dúvida..." onkeydown="if(event.key==='Enter')aiSend()"><button class="ai-send" onclick="aiSend()">→</button></div>
+</div>
+<script>
+// ══ DATA ══
+const products=[
+  {id:1,name:"PlayStation 5 Slim",platform:"PlayStation",type:"console",price:3799,oldPrice:4299,img:"https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=480&h=360&fit=crop&auto=format",badge:"new",rating:4.9,reviews:1240,pix:3609.05,desc:"Console de última geração com SSD ultrarrápido, DualSense e resolução 4K/120fps.",stock:8},
+  {id:2,name:"Xbox Series X",platform:"Xbox",type:"console",price:4199,oldPrice:4799,img:"https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=480&h=360&fit=crop&auto=format",badge:"sale",rating:4.8,reviews:892,pix:3989.05,desc:"12 teraflops, retrocompatibilidade total e Game Pass integrado.",stock:5},
+  {id:3,name:"Nintendo Switch 2",platform:"Nintendo",type:"console",price:3299,oldPrice:null,img:"https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=480&h=360&fit=crop&auto=format",badge:"new",rating:4.9,reviews:567,pix:3134.05,desc:"Tela maior, Joy-Con magnéticos e jogos 4K na TV.",stock:12},
+  {id:4,name:"Headset HyperX Cloud III",platform:"PC",type:"acessorio",price:599,oldPrice:749,img:"https://images.unsplash.com/photo-1599669454699-248893623440?w=480&h=360&fit=crop&auto=format",badge:"sale",rating:4.7,reviews:3421,pix:569.05,desc:"Áudio surround 7.1, drivers de 53mm e microfone com cancelamento de ruído.",stock:20},
+  {id:5,name:"God of War Ragnarök",platform:"PlayStation",type:"game",price:249,oldPrice:299,img:"https://cdn.akamai.steamstatic.com/steam/apps/1593500/library_600x900_2x.jpg",badge:null,rating:5.0,reviews:8902,pix:236.55,desc:"Obra-prima do PS5. Kratos e Atreus no Ragnarök nórdico.",stock:30},
+  {id:6,name:"Controle DualSense Edge",platform:"PlayStation",type:"acessorio",price:999,oldPrice:1199,img:"https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=480&h=360&fit=crop&auto=format",badge:"sale",rating:4.8,reviews:445,pix:949.05,desc:"Controle pro com triggers e sticks ajustáveis.",stock:7},
+  {id:7,name:"Mario Kart World",platform:"Nintendo",type:"game",price:349,oldPrice:null,img:"https://assets.nintendo.com/image/upload/ar_16:9,c_lpad,w_600/b_white/f_auto/q_auto/store/software/switch2/70010000095431/0485f410193ca12f92a2f615ea608bb437540f321bd05e464593c33fefa09bf2",badge:"new",rating:4.9,reviews:2134,pix:331.55,desc:"32 pistas inéditas, mundo aberto e online para 24 jogadores.",stock:25},
+  {id:8,name:"Razer BlackWidow V4",platform:"PC",type:"acessorio",price:799,oldPrice:999,img:"https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=480&h=360&fit=crop&auto=format",badge:"sale",rating:4.6,reviews:1567,pix:759.05,desc:"Switches Green táticos, RGB por tecla e macro keys dedicadas.",stock:14},
+  {id:9,name:"SNES Classic Mini",platform:"Retro",type:"console",price:1299,oldPrice:null,img:"https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=480&h=360&fit=crop&auto=format",badge:null,rating:4.9,reviews:234,pix:1234.05,desc:"21 jogos clássicos: Super Mario World, Zelda, Donkey Kong.",stock:3},
+  {id:10,name:"Monitor Gamer 27\" 165Hz",platform:"PC",type:"acessorio",price:1899,oldPrice:2299,img:"https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=480&h=360&fit=crop&auto=format",badge:"sale",rating:4.7,reviews:789,pix:1804.05,desc:"IPS QHD 1440p, 165Hz, 1ms, FreeSync Premium e HDR400.",stock:9},
+  {id:11,name:"Forza Horizon 5 Premium",platform:"Xbox",type:"game",price:299,oldPrice:349,img:"https://cdn.akamai.steamstatic.com/steam/apps/1551360/library_600x900_2x.jpg",badge:null,rating:4.8,reviews:4521,pix:284.05,desc:"+500 carros licenciados, mundo aberto no México em 4K/60fps.",stock:18},
+  {id:12,name:"Mouse G Pro X Superlight 2",platform:"PC",type:"acessorio",price:699,oldPrice:849,img:"https://images.unsplash.com/photo-1527814050087-3793815479db?w=480&h=360&fit=crop&auto=format",badge:"sale",rating:4.9,reviews:2341,pix:664.05,desc:"63g ultraleve, sensor HERO 2 25K, bateria 95h.",stock:11},
+];
+const faqs=[
+  {q:"Qual o prazo de entrega?",a:"24h para SP. 2–7 dias para o Brasil via Correios. O prazo exato é calculado no checkout pelo CEP."},
+  {q:"Posso parcelar sem juros?",a:"Até 12x sem juros no cartão para compras ≥ R$100. No PIX você ganha 5% de desconto automático."},
+  {q:"Como funciona a garantia?",a:"Garantia mínima de 12 meses do fabricante. Defeitos de fábrica cobertos integralmente. Acione em 'Meus Pedidos' ou pelo chat."},
+  {q:"Posso rastrear meu pedido?",a:"Sim! Código enviado por e-mail após confirmação. Rastreie em 'Meus Pedidos' ou na página 'Rastrear Pedido'."},
+  {q:"Como funciona o MVPclub?",a:"1 MVPcoin por R$1 gasto. 400 coins = R$20 de desconto. Suba de nível e ganhe mais benefícios."},
+  {q:"Os produtos são originais?",a:"100%. Trabalhamos com distribuidores oficiais. Todos os produtos têm NF e garantia de fábrica."},
+  {q:"Posso trocar por arrependimento?",a:"Sim, 30 dias corridos após o recebimento conforme o CDC. Produto deve estar em perfeito estado."},
+  {q:"Quais formas de pagamento?",a:"PIX (5% off), cartão (12x s/ juros), débito e boleto (vence em 3 dias)."},
+];
+const mockOrders=[
+  {id:"MVP-2026-00042",date:"03/06/2026",status:"shipping",items:[{id:1,qty:1},{id:7,qty:1}],total:4148,code:"BR123456789BR"},
+  {id:"MVP-2026-00031",date:"20/05/2026",status:"delivered",items:[{id:4,qty:1},{id:12,qty:1}],total:1298,code:"BR987654321BR"},
+  {id:"MVP-2026-00019",date:"05/05/2026",status:"delivered",items:[{id:5,qty:2}],total:498,code:"BR555555555BR"},
+];
+const aiAnswers={
+  "console":["Para presentear, o Nintendo Switch 2 é ótimo para todas as idades! 🔴 Para gamers hardcore, o PS5 Slim é a escolha certeira. 🎮","Depende do perfil! PS5 para exclusivos incríveis, Xbox para Game Pass com +400 jogos, Switch 2 para jogar em qualquer lugar."],
+  "frete":["Frete grátis para membros Gold e MVP do MVPclub! 🏆 Para outros, frete expresso a partir de R$14,90. Calcule no checkout pelo seu CEP.","Temos várias opções: PAC, SEDEX e frete expresso. Entrega 24h disponível para SP e região!"],
+  "rastrear":["Acesse 'Meus Pedidos' ou a página 'Rastrear Pedido' e insira o número do pedido. 📍 O código de rastreamento também vem no e-mail de confirmação.","Clica em 📦 Pedidos no menu! Lá você encontra o status e o rastreamento em tempo real de todos os seus pedidos."],
+  "oferta":["Temos até 40% OFF na Semana do Gamer! Use o cupom MVP40 no carrinho. 🔥","Olha nas categorias 'Ofertas' e 'Lançamentos'! Tem PS5, Xbox e vários acessórios com preços imperdíveis."],
+  "pagamento":["Aceitamos PIX (5% off!), cartão de crédito em até 12x sem juros, débito e boleto. 💳","No PIX você ganha desconto automático de 5%! Cartão em até 12x sem juros para compras acima de R$100."],
+  "default":["Posso te ajudar com produtos, pedidos, frete ou cupons! 😊 O que você precisa?","Ótima pergunta! Para mais detalhes, nossa equipe está disponível no chat ao vivo ou WhatsApp. 💬"],
+};
+
+// ══ STATE ══
+let cart=[],wishlist=[],discount=0,loggedIn=false,currentFilter='Todos',currentSort='relevance';
+
+// ══ NAVIGATION ══
+function navigate(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  if(page==='orders')renderOrders();
+  if(page==='wishlist')renderWishlist();
+  if(page==='help')renderFAQ();
+}
+
+function navFilter(cat){
+  currentFilter=cat;
+  currentSort='relevance';
+  const sel=document.getElementById('sort-sel');if(sel)sel.value='relevance';
+  // Update all chip sets
+  document.querySelectorAll('.chip').forEach(c=>{
+    const txt=c.textContent.trim();
+    c.classList.remove('active','active-p');
+    if(cat==='Todos'&&txt.includes('Todos'))c.classList.add('active');
+    else if(txt.toLowerCase().includes(cat.toLowerCase()))c.classList.add('active');
+  });
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  const nm={Games:'nav-games',Consoles:'nav-consoles','Acessórios':'nav-acessorios',Ofertas:'nav-ofertas',Lançamentos:'nav-lancamentos'};
+  if(nm[cat])document.getElementById(nm[cat]).classList.add('active');
+  if(cat==='Todos'){navigate('home');renderProducts();return;}
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-catalog').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  const titles={Games:'🕹️ Games',Consoles:'📺 Consoles','Acessórios':'🎧 Acessórios',Ofertas:'🔥 Ofertas',Lançamentos:'✨ Lançamentos',PlayStation:'🎮 PlayStation',Xbox:'🟢 Xbox',Nintendo:'🔴 Nintendo',PC:'💻 PC Gaming',Retro:'👾 Retrô'};
+  document.getElementById('cat-title').textContent=titles[cat]||cat;
+  document.getElementById('cat-bc').textContent=cat;
+  renderCatalog();
+}
+
+// ══ FILTER ══
+function getFiltered(cat){
+  const c=cat||currentFilter;
+  if(c==='Todos')return[...products];
+  if(c==='Ofertas')return products.filter(p=>p.badge==='sale');
+  if(c==='Lançamentos')return products.filter(p=>p.badge==='new');
+  if(c==='Games')return products.filter(p=>p.type==='game');
+  if(c==='Consoles')return products.filter(p=>p.type==='console');
+  if(c==='Acessórios')return products.filter(p=>p.type==='acessorio');
+  return products.filter(p=>p.platform===c);
+}
+function sortList(list){
+  if(currentSort==='price-asc')return[...list].sort((a,b)=>a.price-b.price);
+  if(currentSort==='price-desc')return[...list].sort((a,b)=>b.price-a.price);
+  if(currentSort==='rating')return[...list].sort((a,b)=>b.rating-a.rating);
+  return list;
+}
+
+// ══ RENDER PRODUCTS ══
+function cardHTML(p){
+  const w=wishlist.includes(p.id);
+  return`<div class="pcard" onclick="openProduct(${p.id})">
+    <div class="pcard-img">
+      ${p.badge?`<div class="pbadge pbadge-${p.badge}">${p.badge==='new'?'Novo':'Oferta'}</div>`:''}
+      <button class="pwish${w?' on':''}" onclick="event.stopPropagation();toggleWish(${p.id})">${w?'♥':'♡'}</button>
+      ${p.img.startsWith("http")||p.img.startsWith("data:")?`<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.style.background='#1a1a2e';this.style.display='none'">`:'<span style="font-size:3rem">'+p.img+'</span>'}
+    </div>
+    <div class="pbody">
+      <div class="pplatform">${p.platform}</div>
+      <div class="pname">${p.name}</div>
+      <div class="prating">★ ${p.rating} <span style="color:var(--muted)">(${p.reviews.toLocaleString('pt-BR')})</span></div>
+      <div class="pprice">
+        ${p.oldPrice?`<div class="pprice-old">R$ ${p.oldPrice.toLocaleString('pt-BR')}</div>`:''}
+        <div class="pprice-now">R$ ${p.price.toLocaleString('pt-BR')}</div>
+        <div class="pprice-pix">💚 PIX: R$ ${p.pix.toFixed(2).replace('.',',')}</div>
+        <div class="pprice-inst">ou 12x de R$ ${(p.price/12).toFixed(2).replace('.',',')}</div>
+      </div>
+      <button class="padd" onclick="event.stopPropagation();addToCart(${p.id})">🛒 Adicionar</button>
+    </div>
+  </div>`;
+}
+function renderProducts(){
+  const list=getFiltered();
+  document.getElementById('products-grid').innerHTML=list.length?list.map(cardHTML).join(''):'<p style="color:var(--muted);padding:40px">Nenhum produto encontrado.</p>';
+}
+function renderCatalog(){
+  const list=sortList(getFiltered());
+  document.getElementById('cat-count').textContent=`${list.length} produto${list.length!==1?'s':''} encontrado${list.length!==1?'s':''}`;
+  document.getElementById('catalog-grid').innerHTML=list.length?list.map(cardHTML).join(''):'<p style="color:var(--muted);padding:40px">Nenhum produto nessa categoria.</p>';
+}
+
+// ══ PRODUCT MODAL ══
+function openProduct(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  const w=wishlist.includes(p.id);
+  document.getElementById('mc-product').innerHTML=`
+    ${p.img.startsWith("http")||p.img.startsWith("data:")?`<div style="border-radius:14px;overflow:hidden;margin-bottom:16px;height:220px;background:#f8f8f8"><img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.style.background='#1a1a2e'"></div>`:`<div style="background:var(--s2);border-radius:14px;padding:18px;text-align:center;font-size:5rem;margin-bottom:16px;display:flex;align-items:center;justify-content:center;min-height:180px">${p.img}</div>`}
+    <div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:6px">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:900;flex:1">${p.name}</h3>
+      <button onclick="toggleWish(${p.id});this.textContent=wishlist.includes(${p.id})?'♥ Salvo':'♡ Salvar';this.style.color=wishlist.includes(${p.id})?'var(--r)':'var(--muted)'" style="background:none;border:1px solid var(--glass-border);border-radius:8px;padding:6px 12px;color:${w?'var(--r)':'var(--muted)'};cursor:pointer;font-size:.82rem;white-space:nowrap">${w?'♥ Salvo':'♡ Salvar'}</button>
+    </div>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px">${p.platform} ${p.badge?`• <span style="color:var(--o)">${p.badge==='new'?'🆕 Novo':'🔥 Oferta'}</span>`:''} • ★ ${p.rating} (${p.reviews.toLocaleString('pt-BR')})</p>
+    <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--r),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px">R$ ${p.price.toLocaleString('pt-BR')}</div>
+    <p style="font-size:.78rem;color:var(--g);margin-bottom:3px">💚 PIX: R$ ${p.pix.toFixed(2).replace('.',',')} (5% off)</p>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px">ou 12x de R$ ${(p.price/12).toFixed(2).replace('.',',')} sem juros</p>
+    <p style="font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:12px">${p.desc}</p>
+    <p style="font-size:.76rem;color:${p.stock<5?'var(--r)':'var(--g)'};margin-bottom:14px">${p.stock<5?`⚠️ Apenas ${p.stock} em estoque!`:`✓ ${p.stock} unidades disponíveis`}</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <button class="qbtn" style="width:32px;height:32px" onclick="changeQty(-1)">−</button>
+      <span id="mq" style="font-size:1rem;font-weight:700;min-width:20px;text-align:center">1</span>
+      <button class="qbtn" style="width:32px;height:32px" onclick="changeQty(1)">+</button>
+    </div>
+    <button class="btn-grad btn-grad-primary" style="width:100%" onclick="addToCartQty(${id});closeOv('ov-product')">🛒 Adicionar ao Carrinho</button>`;
+  document.getElementById('ov-product').classList.add('open');
+}
+function changeQty(d){const e=document.getElementById('mq');if(e)e.textContent=Math.max(1,parseInt(e.textContent)+d);}
+function addToCartQty(id){const q=parseInt(document.getElementById('mq').textContent);for(let i=0;i<q;i++)addToCart(id,true);const p=products.find(x=>x.id===id);showToast(`🛒 ${p.name} (${q}x) adicionado!`);}
+
+// ══ AUTH ══
+function openLogin(){showAuthForm('login');document.getElementById('ov-auth').classList.add('open');}
+function showAuthForm(m){
+  const c=document.getElementById('mc-auth');
+  if(m==='login')c.innerHTML=`<h3 style="font-family:'Syne',sans-serif;font-weight:900;margin-bottom:4px">Entrar 🎮</h3><p style="color:var(--muted);font-size:.82rem;margin-bottom:18px">Acesse sua conta MVPgames</p><input type="email" class="finput" id="ae" placeholder="E-mail"><input type="password" class="finput" id="ap" placeholder="Senha"><button class="btn-grad btn-grad-primary" style="width:100%;margin-bottom:10px" onclick="doLogin()">Entrar</button><button class="btn-grad btn-grad-outline" style="width:100%;margin-bottom:14px" onclick="doGoogleLogin()">🔵 Entrar com Google</button><p style="text-align:center;font-size:.8rem;color:var(--muted)">Não tem conta? <a onclick="showAuthForm('register')" style="color:var(--p);cursor:pointer">Cadastre-se</a> · <a onclick="showAuthForm('recover')" style="color:var(--p);cursor:pointer">Esqueci a senha</a></p>`;
+  else if(m==='register')c.innerHTML=`<h3 style="font-family:'Syne',sans-serif;font-weight:900;margin-bottom:4px">Criar conta</h3><p style="color:var(--muted);font-size:.82rem;margin-bottom:18px">Junte-se a +50k gamers no MVPclub!</p><div class="frow"><div><label class="flabel">Nome</label><input class="finput" id="rn" placeholder="Seu nome"></div><div><label class="flabel">Sobrenome</label><input class="finput" placeholder="Sobrenome"></div></div><label class="flabel">E-mail</label><input type="email" class="finput" placeholder="email@exemplo.com"><label class="flabel">Senha</label><input type="password" class="finput" placeholder="Mínimo 8 caracteres"><label class="flabel">Plataforma favorita</label><select class="finput"><option>PlayStation</option><option>Xbox</option><option>Nintendo</option><option>PC</option><option>Múltiplas</option></select><button class="btn-grad btn-grad-primary" style="width:100%;margin-bottom:10px" onclick="doRegister()">Criar Conta Grátis 🎮</button><p style="text-align:center;font-size:.8rem;color:var(--muted)">Já tem conta? <a onclick="showAuthForm('login')" style="color:var(--p);cursor:pointer">Entrar</a></p>`;
+  else c.innerHTML=`<h3 style="font-family:'Syne',sans-serif;font-weight:900;margin-bottom:14px">Recuperar senha</h3><label class="flabel">E-mail cadastrado</label><input type="email" class="finput" id="rec" placeholder="email@exemplo.com"><button class="btn-grad btn-grad-primary" style="width:100%;margin-bottom:10px" onclick="doRecover()">Enviar link</button><p style="text-align:center;font-size:.8rem;color:var(--muted)"><a onclick="showAuthForm('login')" style="color:var(--p);cursor:pointer">← Voltar</a></p>`;
+}
+function doLogin(){loggedIn=true;closeOv('ov-auth');document.getElementById('login-btn').textContent='Minha Conta';document.getElementById('login-btn').onclick=()=>navigate('orders');showToast('Bem-vindo de volta 🎮');}
+function doGoogleLogin(){loggedIn=true;closeOv('ov-auth');document.getElementById('login-btn').textContent='Minha Conta';document.getElementById('login-btn').onclick=()=>navigate('orders');showToast('Login com Google ✓');}
+function doRegister(){const n=document.getElementById('rn')?.value;if(!n){showToast('Preencha seu nome!');return;}loggedIn=true;closeOv('ov-auth');document.getElementById('login-btn').textContent='Minha Conta';document.getElementById('login-btn').onclick=()=>navigate('orders');showToast(`Bem-vindo(a), ${n}! Você é Bronze no MVPclub 🥉`);}
+function doRecover(){closeOv('ov-auth');showToast('📧 Link de recuperação enviado!');}
+
+// ══ CART ══
+function addToCart(id,silent=false){const p=products.find(x=>x.id===id);const ex=cart.find(x=>x.id===id);if(ex)ex.qty++;else cart.push({...p,qty:1});updateCart();if(!silent)showToast(`🛒 ${p.name} adicionado!`);}
+function removeFromCart(id){cart=cart.filter(x=>x.id!==id);updateCart();}
+function changeCartQty(id,d){const i=cart.find(x=>x.id===id);if(!i)return;i.qty=Math.max(1,i.qty+d);updateCart();}
+function updateCart(){
+  const count=cart.reduce((s,x)=>s+x.qty,0);
+  const sub=cart.reduce((s,x)=>s+x.price*x.qty,0);
+  const total=Math.max(0,sub-discount);
+  document.getElementById('ccount').textContent=count;
+  document.getElementById('cs-sub').textContent=`R$ ${sub.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+  document.getElementById('cs-total').textContent=`R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+  const dr=document.getElementById('cs-disc-row');
+  if(discount>0){dr.style.display='flex';document.getElementById('cs-disc').textContent=`-R$ ${discount.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;}
+  else dr.style.display='none';
+  const list=document.getElementById('cs-items');
+  if(!cart.length){list.innerHTML='<p style="color:var(--muted);text-align:center;padding:40px 0">Carrinho vazio 🛒</p>';return;}
+  list.innerHTML=cart.map(i=>`<div class="citem"><span class="ci-icon">${i.img}</span><div class="ci-info"><div class="ci-name">${i.name}</div><div class="ci-price">R$ ${(i.price*i.qty).toLocaleString('pt-BR')}</div><div class="ci-qty"><button class="qbtn" onclick="changeCartQty(${i.id},-1)">−</button><span style="font-size:.8rem;min-width:14px;text-align:center">${i.qty}</span><button class="qbtn" onclick="changeCartQty(${i.id},1)">+</button></div></div><button class="crm" onclick="removeFromCart(${i.id})">🗑️</button></div>`).join('');
+}
+function toggleCart(){document.getElementById('csidebar').classList.toggle('open');}
+function applyCoupon(){
+  const code=document.getElementById('coup-inp').value.trim().toUpperCase();
+  const sub=cart.reduce((s,x)=>s+x.price*x.qty,0);
+  const msg=document.getElementById('coup-msg');
+  if(code==='MVP40'){discount=Math.round(sub*.4);msg.innerHTML='<span style="color:var(--g);font-size:.78rem">✓ MVP40 — 40% OFF aplicado!</span>';}
+  else if(code==='BRONZE10'){discount=Math.round(sub*.1);msg.innerHTML='<span style="color:var(--g);font-size:.78rem">✓ BRONZE10 — 10% OFF!</span>';}
+  else if(code==='FRETE'){document.getElementById('cs-frete').textContent='Grátis 🎉';msg.innerHTML='<span style="color:var(--g);font-size:.78rem">✓ Frete grátis!</span>';return;}
+  else{discount=0;msg.innerHTML='<span style="color:var(--r);font-size:.78rem">✗ Cupom inválido</span>';}
+  updateCart();
+}
+
+// ══ CHECKOUT ══
+function openCheckout(){
+  if(!cart.length){showToast('Adicione produtos ao carrinho!');return;}
+  toggleCart();
+  const sub=cart.reduce((s,x)=>s+x.price*x.qty,0);
+  const total=Math.max(0,sub-discount);
+  document.getElementById('mc-checkout').innerHTML=`
+    <h3 style="font-family:'Syne',sans-serif;font-weight:900;margin-bottom:18px">Finalizar Compra</h3>
+    <div class="tabs"><div class="tab active" id="ck1">1. Endereço</div><div class="tab" id="ck2" style="color:var(--muted)">2. Pagamento</div><div class="tab" id="ck3" style="color:var(--muted)">3. Confirmação</div></div>
+    <div id="ck-s1">
+      <div class="frow"><div><label class="flabel">CEP</label><input class="finput" id="ck-cep" placeholder="00000-000" oninput="calcFreteOpts(this.value)"></div><div><label class="flabel">Estado</label><select class="finput"><option>SP</option><option>RJ</option><option>MG</option><option>RS</option><option>Outro</option></select></div></div>
+      <label class="flabel">Endereço</label><input class="finput" placeholder="Rua, número, complemento">
+      <label class="flabel">Cidade</label><input class="finput" placeholder="Sua cidade">
+      <div id="frete-opts" style="display:none;margin-bottom:12px"><label class="flabel">Opções de frete</label><div id="frete-list"></div></div>
+      <button class="btn-grad btn-grad-primary" style="width:100%" onclick="ckNext(1)">Continuar →</button>
+    </div>
+    <div id="ck-s2" style="display:none">
+      <label class="flabel">Forma de pagamento</label>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+        <label style="background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:12px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:.85rem;transition:.2s" onclick="selectPay(this,'pix')"><input type="radio" name="pay" style="accent-color:var(--p)"> 💚 PIX — R$ ${(total*.95).toFixed(2).replace('.',',')} <span style="color:var(--g);font-size:.78rem">(5% off)</span></label>
+        <label style="background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:12px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:.85rem" onclick="selectPay(this,'card')"><input type="radio" name="pay" style="accent-color:var(--p)"> 💳 Cartão — R$ ${total.toLocaleString('pt-BR')} ou 12x de R$ ${(total/12).toFixed(2).replace('.',',')}</label>
+        <label style="background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:12px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:.85rem" onclick="selectPay(this,'boleto')"><input type="radio" name="pay" style="accent-color:var(--p)"> 📄 Boleto — R$ ${total.toLocaleString('pt-BR')}</label>
+      </div>
+      <div id="card-fields" style="display:none">
+        <input class="finput" placeholder="Número do cartão" oninput="this.value=this.value.replace(/\D/g,'').replace(/(\d{4})/g,'$1 ').trim().slice(0,19)">
+        <div class="frow"><input class="finput" placeholder="MM/AA"><input class="finput" placeholder="CVV"></div>
+        <input class="finput" placeholder="Nome no cartão">
+      </div>
+      <button class="btn-grad btn-grad-primary" style="width:100%" onclick="ckNext(2)">Continuar →</button>
+    </div>
+    <div id="ck-s3" style="display:none">
+      <div style="background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:12px;padding:16px;margin-bottom:16px">
+        <h4 style="font-size:.88rem;margin-bottom:10px">Resumo</h4>
+        ${cart.map(i=>`<div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:5px"><span>${i.img} ${i.name} (${i.qty}x)</span><span>R$ ${(i.price*i.qty).toLocaleString('pt-BR')}</span></div>`).join('')}
+        <div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-weight:800"><span>Total</span><span style="background:linear-gradient(135deg,var(--r),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent">R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}</span></div>
+      </div>
+      <button class="btn-grad btn-grad-primary" style="width:100%" onclick="confirmOrder()">✅ Confirmar Pedido</button>
+    </div>`;
+  document.getElementById('ov-checkout').classList.add('open');
+}
+function calcFreteOpts(cep){
+  if(cep.replace(/\D/g,'').length<8)return;
+  const sp=cep.startsWith('0')||cep.startsWith('1');
+  document.getElementById('frete-opts').style.display='block';
+  document.getElementById('frete-list').innerHTML=[
+    {l:sp?'⚡ Expresso 24h':'📦 PAC 5–7 dias úteis',p:sp?'R$ 14,90':'R$ 19,90'},
+    {l:'🚚 SEDEX 2–3 dias úteis',p:sp?'R$ 22,90':'R$ 34,90'},
+    {l:'🆓 Grátis MVPclub Gold+',p:'Gratuito'},
+  ].map(o=>`<label style="background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:8px;padding:9px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.82rem;margin-bottom:6px"><span><input type="radio" name="fr" style="accent-color:var(--p);margin-right:8px">${o.l}</span><span style="font-weight:700;color:var(--o)">${o.p}</span></label>`).join('');
+}
+function selectPay(el,type){document.querySelectorAll('label[onclick^="selectPay"]').forEach(l=>l.style.borderColor='var(--glass-border)');el.style.borderColor='var(--p)';document.getElementById('card-fields').style.display=type==='card'?'block':'none';}
+function ckNext(s){document.getElementById('ck-s'+s).style.display='none';document.getElementById('ck-s'+(s+1)).style.display='block';document.getElementById('ck'+(s+1)).classList.add('active');document.getElementById('ck'+(s+1)).style.color='';}
+function confirmOrder(){const id='MVP-2026-'+String(Math.floor(Math.random()*9000)+1000).padStart(5,'0');closeOv('ov-checkout');cart=[];discount=0;document.getElementById('coup-inp').value='';document.getElementById('coup-msg').innerHTML='';updateCart();showToast(`🎉 Pedido ${id} confirmado! Verifique seu e-mail.`);}
+
+// ══ WISHLIST ══
+function toggleWish(id){const p=products.find(x=>x.id===id);if(wishlist.includes(id)){wishlist=wishlist.filter(x=>x!==id);showToast(`💔 Removido da lista`);}else{wishlist.push(id);showToast(`♥ ${p.name} salvo!`);}document.getElementById('wcount').textContent=wishlist.length;document.querySelectorAll('.pwish').forEach(b=>{const pid=parseInt((b.getAttribute('onclick')||'').match(/\d+/)?.[0]||0);if(pid){b.classList.toggle('on',wishlist.includes(pid));b.textContent=wishlist.includes(pid)?'♥':'♡';}});}
+function renderWishlist(){const g=document.getElementById('wgrid'),e=document.getElementById('wempty');if(!wishlist.length){g.style.display='none';e.style.display='block';return;}g.style.display='grid';e.style.display='none';g.innerHTML=products.filter(p=>wishlist.includes(p.id)).map(cardHTML).join('');}
+
+// ══ ORDERS ══
+function renderOrders(){
+  const slot=document.getElementById('acct-hdr-slot');
+  slot.innerHTML=loggedIn?`<div class="acct-hdr"><div class="acct-av">DM</div><div class="acct-info"><h2>Diogo Magalhães</h2><p>dsmmage@gmail.com</p><span class="acct-lvl">🥉 Bronze — 320 MVPcoins</span></div><div class="coins-bar"><div><span class="coins-n">320</span> <span style="font-size:.78rem;color:var(--muted)">MVPcoins</span></div><div class="pbar"><div class="pfill" style="width:32%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:3px">680 coins para Silver</div></div></div>`:`<div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center"><p style="color:var(--muted);margin-bottom:12px">Faça login para ver seus pedidos</p><button class="btn-grad btn-grad-primary" onclick="openLogin()">Entrar na conta</button></div>`;
+  const sm={shipping:{l:'Em transporte',c:'s-ship'},processing:{l:'Em processamento',c:'s-proc'},delivered:{l:'Entregue',c:'s-del'}};
+  const oH=o=>{const items=o.items.map(i=>products.find(p=>p.id===i.id)).filter(Boolean);const s=sm[o.status];return`<div class="ocard"><div class="ocard-top"><div><div class="oid">${o.id}</div><div class="oid">${o.date}</div></div><span class="ostatus ${s.c}">${s.l}</span></div><div class="oitems">${items.map(p=>`<div class="othumb">${p.img.startsWith("http")||p.img.startsWith("data:")?`<img src="${p.img}" style="width:32px;height:32px;object-fit:contain;border-radius:6px">`:p.img}<span>${p.name.split(' ').slice(0,2).join(' ')}</span></div>`).join('')}</div><div class="ofoot"><div class="ototal">R$ ${o.total.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="oactions"><button class="bsm" onclick="goTrack('${o.id}','${o.code}','${o.status}')">📍 Rastrear</button>${o.status==='delivered'?`<button class="bsm" onclick="navigate('returns')">🔄 Devolver</button>`:''}<button class="bsm bsm-p" onclick="reorder(${JSON.stringify(o.items.map(i=>i.id))})">🛒 Comprar novamente</button></div></div></div>`;};
+  document.getElementById('ol-all').innerHTML=mockOrders.map(oH).join('');
+  document.getElementById('ol-proc').innerHTML=mockOrders.filter(o=>o.status!=='delivered').map(oH).join('')||'<div class="empty-st"><div class="ei">✅</div><h3>Nenhum pedido em andamento</h3></div>';
+  document.getElementById('ol-done').innerHTML=mockOrders.filter(o=>o.status==='delivered').map(oH).join('');
+}
+function reorder(ids){ids.forEach(id=>addToCart(id,true));showToast('🛒 Produtos adicionados!');toggleCart();}
+function switchTab(page,tab,el){document.querySelectorAll(`#page-${page} .tab`).forEach(t=>t.classList.remove('active'));document.querySelectorAll(`#page-${page} .tab-content`).forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById(`tab-${page}-${tab}`).classList.add('active');}
+
+// ══ TRACKING ══
+function goTrack(id,code,status){navigate('tracking');document.getElementById('track-inp').value=id;showTrackResult(id,code,status);}
+function doTrack(){const v=document.getElementById('track-inp').value.trim();if(!v){showToast('Insira o código!');return;}const o=mockOrders.find(x=>x.id===v||x.code===v);o?showTrackResult(o.id,o.code,o.status):(document.getElementById('track-result').style.display='block',document.getElementById('track-empty').style.display='none',document.getElementById('track-result').innerHTML='<div class="empty-st"><div class="ei">❓</div><h3>Pedido não encontrado</h3></div>');}
+function showTrackResult(orderId,code,status){
+  document.getElementById('track-result').style.display='block';
+  document.getElementById('track-empty').style.display='none';
+  const steps=[
+    {l:'Pedido confirmado',d:'Pagamento aprovado',t:'03/06/2026 10:14',done:true,act:false},
+    {l:'Separação e embalagem',d:'Produto embalado',t:'03/06/2026 14:22',done:true,act:false},
+    {l:'Enviado',d:`Código: ${code}`,t:'04/06/2026 08:51',done:status!=='processing',act:status==='shipping'},
+    {l:'Em trânsito',d:'Transferindo para destino',t:status==='delivered'?'05/06/2026 11:30':'Aguardando...',done:status==='delivered',act:false},
+    {l:'Saiu para entrega',d:'Em rota de entrega',t:status==='delivered'?'06/06/2026 09:05':'Aguardando...',done:status==='delivered',act:false},
+    {l:'Entregue',d:'Objeto entregue',t:status==='delivered'?'06/06/2026 14:37':'Aguardando...',done:status==='delivered',act:false},
+  ];
+  document.getElementById('track-result').innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px"><div><h4 style="font-family:'Syne',sans-serif;font-weight:900">${orderId}</h4><p style="font-size:.8rem;color:var(--muted)">Código: ${code}</p></div><span class="ostatus ${status==='delivered'?'s-del':status==='shipping'?'s-ship':'s-proc'}">${status==='delivered'?'Entregue':status==='shipping'?'Em transporte':'Em processamento'}</span></div>
+    <div class="track-timeline">${steps.map((s,i)=>`<div class="tstep"><div class="tdot-col"><div class="tdot${s.done?' done':s.act?' active':''}"></div>${i<steps.length-1?`<div class="tline${s.done?' done':''}"></div>`:''}</div><div class="tinfo" style="padding-bottom:${i<steps.length-1?'8px':'0'}"><h4 style="color:${s.done||s.act?'var(--text)':'var(--muted)'}">${s.l}</h4><p>${s.d}</p><p class="ttime">${s.t}</p></div></div>`).join('')}</div>
+  </div>`;
+}
+
+// ══ FAQ ══
+function renderFAQ(){document.getElementById('faq-list').innerHTML=faqs.map((f,i)=>`<div class="faq-item" id="fq${i}"><div class="faq-q" onclick="document.getElementById('fq${i}').classList.toggle('open')">${f.q}<span class="faq-arr">▼</span></div><div class="faq-a">${f.a}</div></div>`).join('');}
+
+// ══ FORMS ══
+function submitContact(){const n=document.getElementById('ct-name').value,m=document.getElementById('ct-msg').value;if(!n||!m){showToast('Preencha todos os campos!');return;}document.getElementById('ct-name').value='';document.getElementById('ct-msg').value='';showToast('📨 Mensagem enviada! Respondemos em até 24h.');}
+function submitReturn(){const o=document.getElementById('ret-order').value,d=document.getElementById('ret-desc').value;if(!o||!d){showToast('Preencha todos os campos!');return;}document.getElementById('ret-order').value='';document.getElementById('ret-desc').value='';showToast('✅ Solicitação enviada! Etiqueta em até 24h.');}
+
+// ══ UTILS ══
+function closeOv(id){document.getElementById(id).classList.remove('open');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// ══ SEARCH ══
+const si=document.getElementById('search-input'),sd=document.getElementById('search-dropdown');
+si.addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();
+  if(!q){sd.style.display='none';return;}
+  const res=products.filter(p=>p.name.toLowerCase().includes(q)||p.platform.toLowerCase().includes(q)).slice(0,6);
+  if(!res.length){sd.style.display='none';return;}
+  sd.style.display='block';
+  sd.innerHTML=res.map(p=>`<div onclick="openProduct(${p.id});sd.style.display='none';si.value=''" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:.15s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'">${p.img.startsWith("http")||p.img.startsWith("data:")?`<img src="${p.img}" style="width:36px;height:36px;object-fit:contain;border-radius:6px;background:var(--s2)">`:'<span style="font-size:1.4rem">'+p.img+'</span>'}<div style="flex:1;min-width:0"><div style="font-size:.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div><div style="font-size:.73rem;color:var(--muted)">${p.platform} · R$ ${p.price.toLocaleString('pt-BR')}</div></div></div>`).join('')+`<div onclick="sd.style.display='none'" style="padding:10px 14px;font-size:.8rem;color:var(--p);cursor:pointer;text-align:center">Ver todos os resultados →</div>`;
+});
+si.addEventListener('keydown',e=>{if(e.key==='Enter'){const q=si.value.trim();if(!q)return;sd.style.display='none';const res=products.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.platform.toLowerCase().includes(q.toLowerCase()));document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-catalog').classList.add('active');document.getElementById('cat-title').textContent=`Resultados para "${q}"`;document.getElementById('cat-bc').textContent='Busca';document.getElementById('cat-count').textContent=`${res.length} produto${res.length!==1?'s':''} encontrado${res.length!==1?'s':''}`;document.getElementById('catalog-grid').innerHTML=res.length?res.map(cardHTML).join(''):'<p style="color:var(--muted);padding:40px">Nenhum produto encontrado.</p>';si.value='';window.scrollTo({top:0,behavior:'smooth'});}});
+document.addEventListener('click',e=>{if(!si.contains(e.target)&&!sd.contains(e.target))sd.style.display='none';});
+
+// ══ AI ══
+function toggleAI(){document.getElementById('ai-panel').classList.toggle('open');}
+const aiRespond={
+  "console":aiAnswers["console"],"consol":aiAnswers["console"],
+  "frete":aiAnswers["frete"],"entrega":aiAnswers["frete"],"envio":aiAnswers["frete"],
+  "rastr":aiAnswers["rastrear"],"pedido":aiAnswers["rastrear"],
+  "ofert":aiAnswers["oferta"],"descont":aiAnswers["oferta"],"cupom":aiAnswers["oferta"],
+  "pix":aiAnswers["pagamento"],"pagamento":aiAnswers["pagamento"],"cartão":aiAnswers["pagamento"]
+};
+function aiMsg(msg){document.getElementById('ai-input').value=msg;aiSend();}
+function aiSend(){
+  const inp=document.getElementById('ai-input');
+  const msg=inp.value.trim();if(!msg)return;
+  const msgs=document.getElementById('ai-msgs');
+  msgs.innerHTML+=`<div class="ai-msg user">${msg}</div>`;
+  inp.value='';
+  setTimeout(()=>{
+    const low=msg.toLowerCase();
+    let resp=aiAnswers["default"][Math.floor(Math.random()*aiAnswers["default"].length)];
+    for(const [k,v]of Object.entries(aiRespond)){if(low.includes(k)){resp=v[Math.floor(Math.random()*v.length)];break;}}
+    msgs.innerHTML+=`<div class="ai-msg bot">${resp}</div>`;
+    msgs.scrollTop=msgs.scrollHeight;
+    // Remove chips after first interaction
+    const chips=document.getElementById('ai-chips');if(chips)chips.style.display='none';
+  },600);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+// ══ INIT ══
+renderProducts();
+</script>
+</body>
+</html>
